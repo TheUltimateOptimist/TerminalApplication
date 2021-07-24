@@ -29,7 +29,7 @@ def fromDate(s):
 def value(val):
     if val != "":
         if str(type(val)) == "<class 'int'>":
-            return val
+            return str(val)
         else:
             return "'" + val + "'"
     else:
@@ -57,3 +57,18 @@ def toClockTime(s):
 def secondsToHourMinuteFormat(seconds):
     h = math.floor(seconds / 3600)
     return f"{formatZero(h)}:{formatZero(round((seconds - h * 3600) / 60))}"
+
+
+def currentDate():
+    t = time.localtime(time.time())
+    return f"{t.tm_year}-{t.tm_mon}-{t.tm_mday}"
+
+def currentDateTime():
+    t = time.localtime(time.time())
+    return f"{t.tm_year}-{t.tm_mon}-{t.tm_mday} {t.tm_hour}:{t.tm_min}:{t.tm_sec}"
+
+
+def currentTime():
+    t = time.localtime(time.time())
+    return f"{t.tm_hour}:{t.tm_min}:{t.tm_sec}"       
+

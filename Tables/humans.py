@@ -1,6 +1,7 @@
 # contains all functions that have to do with the mitmenschen table
 
 # third party imports:
+from GAUD.add import addIntern
 from termcolor import colored
 from colorama import init
 # first party imports:
@@ -79,21 +80,21 @@ def nextbirthday(showOperation, operation):
 
 # Add:
 def addhuman(showOperation, operation):
-    vorname = format.value(input("firstname: "))
-    if vorname != "NULL":
-        nachname = format.value(input("lastname: "))
-        geburtsdatum = format.value(input("birthday: "))
-        handynummer = format.value(input("phonenumber: "))
-        beziehung = format.value(input("relation: "))
-        lieblingsessen = format.value(input("favouritefood: "))
-        mutter = format.value(input("mother: "))
-        vater = format.value(input("father: "))
-        ehepartner = format.value(input("spouse: "))
-        job = format.value(input("job: "))
-        sql.execute(
-            f"INSERT INTO mitmenschen(firstname, lastname, birthday,  phonenumber, relation, favouritefood, mother, father, spouse, job) Values({vorname}, {nachname}, {geburtsdatum}, {handynummer}, {beziehung}, {lieblingsessen}, {mutter}, {vater}, {ehepartner},{job})", showOperation)
+    values = []
+    values.append(input("firstname: "))
+    if values[0] != "":
+        values.append(input("lastname: "))
+        values.append(input("birthday: "))
+        values.append(input("phonenumber: "))
+        values.append(input("relation: "))
+        values.append(input("favouritefood: "))
+        values.append(input("mother: "))
+        values.append(input("father: "))
+        values.append(input("spouse: "))
+        values.append(input("job: "))
+        addIntern("mitmenschen", ["all except id"], values, showOperation)
         color.printGreen("Human successfully added")
-        if operation.__contains__("-r") and vorname != "":
+        if operation.__contains__("-r") and values[0] != "":
             addhuman(showOperation, operation)
 
 # Update:

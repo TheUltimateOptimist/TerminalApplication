@@ -19,7 +19,7 @@ def lhelp(irrelevantOne, irrelevantTwo):
     color.printBlue("all operations: ")
     for v in terminalLanguage.allOperations:
         color.printMagenta(v.__name__)
-        color.printBlue("all additions: ")
+    color.printBlue("all additions: ")
     for s in terminalLanguage.allAdditions:
         color.printMagenta(s)
 

@@ -6,6 +6,7 @@
 # first party imports:
 import sql
 import color
+import functions
 
 
 #functions:
@@ -29,13 +30,22 @@ def getcolumnnames(showOperation, operation):
         return columnNames
 
 
+def getColumnNames(table, showOperation):
+    result = sql.execute(f"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{table}' ORDER BY ORDINAL_POSITION", showOperation)
+    rList = []
+    for row in result:
+        rList.append(str(row[0]))
+    return rList    
+
+
+
 def get(showOperation, operation):
     table = input("table: ")
     if table != "":
         all = input("all? ")
         if all == "y":
             whereclause = input("where clause: ")
-            columns = getcolumnnames(showOperation, table)
+            columns = getColumnNames(table, showOperation)
             if whereclause == "":
                 sqloperation = f"SELECT * FROM {table}"
             else:
@@ -49,10 +59,37 @@ def get(showOperation, operation):
                 sqloperation = f"SELECT {columns} FROM {table} WHERE {whereclause}"
             columns = columns.split(", ")
         result = sql.execute(sqloperation, showOperation)
-        for r in result:
-            s = ""
-            for c in range(len(columns)):
-                s = s + str(columns[c][0]) + ": " + str(r[c]) + " | "
-            color.printBlue(s)
+        functions.printTable(functions.toStringList(2, result), columns, "blue", ["cyan"], "blue", True)
         if operation.__contains__("-r") and table != "":
             get(showOperation, operation)
+
+
+
+# intern functions
+def getIntern(tableName, columns, whereClause, showOperation):
+    """
+    retrieves data from the personal database\n
+    returns a two dimensional array\n
+    parameters:\n
+    tableName -> name of the table to retrieve data from\n
+    columns -> list of the columns that have to be retrieved\n
+    whereClause -> whereClause for further specifying which values to retrieve\n
+    showOperation -> if true sql operation will be printed
+    """
+    if whereClause != "":
+        whereClause = "WHERE " + whereClause    
+    if columns[0] == "all":
+        columnNames = "*"
+    else:
+        columnNames = ", ".join(columns)
+    result = sql.execute(f"SELECT {columnNames} FROM {tableName} {whereClause}", showOperation)
+    finalList = []  
+    for i in range(len(result)):
+        list = []
+        for j in range(len(result[i])):
+            list.append(str(result[i][j]))
+        finalList.append(list)        
+    return finalList
+            
+
+        

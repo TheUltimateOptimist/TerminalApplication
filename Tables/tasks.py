@@ -1,6 +1,7 @@
 # contains all functions having to do with the tasks table
 
 # third party imports:
+from GAUD.update import updateIntern
 import time
 from colorama import init
 from termcolor import colored
@@ -8,58 +9,74 @@ from termcolor import colored
 # first party imports:
 import sql
 import color
+import format
+import functions
+from GAUD import get
+
 
 # functions:
 # Get:
-def gettasks(showOperation, operation):
+def getTasks(showOperation, operation):
     init()  # initialize colors
     if operation.__contains__("-d"):
-        status = 1
-        color = "green"
-        t = time.localtime(time.time())
-        addition = f" AND completion = '{t.tm_year}-{t.tm_mon}-{t.tm_mday}'"
-    else:
-        status = 0
-        color = "red"
-        addition = ""
-    result = sql.execute(
-        f"SELECT title, priority FROM tasks WHERE status = {status}{addition} ORDER BY priority DESC", showOperation)
-    if len(result) == 0:
-        color.printGreen("No Tasks")
-    else:
-        for row in result:
-            print(f"{str(row[1])} | {colored(str(row[0]), color)}")
-            s = input("")
+        return get.getIntern("tasks", ["priority", "title"], f"status = 1 AND completion = '{format.currentDate()}'", showOperation)
+    else:  
+        resultOne = get.getIntern("tasks", ["priority", "title"], f"status = 0 AND (workondate = '{format.currentDate()}' OR workondate = '2020-12-12')", showOperation)
+        resultTwo = get.getIntern("tasks", ["workondate"], f"status = 0 AND (workondate = '{format.currentDate()}' OR workondate = '2020-12-12')", showOperation)
+        colors = []
+        for i in range(len(resultTwo)):
+            if str(resultTwo[i][0]) == "2020-12-12":
+                colors.append("yellow")
+            else:
+                colors.append("red")
+        if operation.__contains__("-c"):
+            return colors
+        else:
+            return resultOne
+
 
 # Add
-def addtask(showOperation, operation):
-    if operation.__contains__("-h"):
-        print("lets you add a task to the list of tasks")
-    else:
+def addTask(showOperation):
         title = input("title: ")
         if title != "":
-            priority = input("priority: ")
-            date = time.localtime(time.time())
+            priority = int(input("priority: "))
+            workondate = input("workondate: ")
+            if workondate == "":
+                workondate = "2020-12-12"
             if len(sql.execute(f"SELECT * FROM tasks WHERE title = '{title}'", showOperation)) == 0:
                 sql.execute(
-                    f"INSERT INTO tasks Values('{title}', {priority}, 0, '{date.tm_year}-{date.tm_mon}-{date.tm_mday}', NULL)", showOperation)
+                    f"INSERT INTO tasks Values('{title}', {priority}, 0, '{format.currentDate()}', NULL, 0, '{workondate}')", showOperation)
             else:
                 sql.execute(
-                    f"UPDATE tasks SET priority = {priority}, status = 0, initialization = '{date}', completion = NULL WHERE title = '{title}' ", showOperation)
-            if operation.__contains__("-r") and title != "":
-                addtask(showOperation, operation)
+                    f"UPDATE tasks SET priority = {priority}, status = 0, initialization = '{format.currentDate()}', completion = NULL, workondate = '{workondate}' WHERE title = '{title}'", showOperation)
 
 
 # Update
-def taskdone(showOperation, operation):
-    task = input("task: ")
+def taskDone(showOperation, task):
     if task != "":
-        if len(sql.execute(f"SELECT * FROM tasks WHERE title = '{task}'"), showOperation) > 0:
+        count = sql.execute(f"SELECT count FROM tasks WHERE title = '{task}'", showOperation)
+        if len(count) > 0:
             date = time.localtime(time.time())
             sql.execute(
-                f"UPDATE tasks SET status = 1, completion = '{date.tm_year}-{date.tm_mon}-{date.tm_mday}' WHERE title = '{task}'", showOperation)
-            if operation.__contains__("-r") and task != "":
-                taskdone(showOperation, operation)
+                f"UPDATE tasks SET status = 1, completion = '{date.tm_year}-{date.tm_mon}-{date.tm_mday}', count = {str(count[0][0])} WHERE title = '{task}'", showOperation)
         else:
             color.printRed("ERROR: invalid name")
-            taskdone(showOperation, operation)
+
+def tasks(showOperation, operation):
+    result = getTasks(showOperation, "")
+    functions.printTable(result, ["priority", "title"], "blue", getTasks(showOperation, "-c"), "blue", True)
+    color.printBlue("1: view done tasks | 2: add new task | 3: task done | 4: change workondate")
+    next = input("next: ")
+    while next != "":
+        if next == "1":
+            functions.printTable(getTasks(showOperation, "-d"), ["priority", "title"], "blue", ["green"], "blue", showIndexes=True)
+        elif next == "2": 
+            addTask(showOperation)
+        elif next == "3":
+            taskNumber = int(input("taskNumber: "))
+            taskDone(showOperation, str(result[taskNumber -1][1]))
+        elif next == "4":
+            taskNumber = int(input("taskNumber: "))
+            newDate = input("new workondate: ")
+            updateIntern("tasks", ["workondate"], [newDate], f"title = '{str(result[taskNumber - 1][1])}'", showOperation)
+        next = input("next: ")    

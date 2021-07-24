@@ -62,3 +62,32 @@ def addtable(showOperation, operation):
         color.printGreen(f'table {tableName} successfully created')
         if operation.__contains__("-r") and tableName != "":
             addtable(showOperation, operation)
+
+
+# intern functions
+def addIntern(tableName, columns, values, showOperation):
+    """
+    inserts a set of values into personal database\n
+    returns nothing\n
+    parameters:\n
+    tableName     -> table the values will be inserted into\n
+    columns       -> list of the columns the values belong to the\n
+                  -> ["all"]: will assume that you entered value for every column of the table\n
+                  -> ["all except id"]: will assume you entered a value for every column of the table except the id column of the\n
+    values        -> list of the values to be inserted into the tables\n
+    showOperation -> prints sql operation if showOperation is true       
+    """
+    values = sql.prepare(values)
+    if columns[0] == "all":
+        sql.execute(
+            f"INSERT INTO {tableName} VALUES({', '.join(values)})", showOperation)
+    elif columns[0] == "all except id":
+        columnNames = get.getcolumnnames(showOperation, tableName)
+        for i in range(len(columnNames)):
+            columnNames[i] = columnNames[i][0]
+        columnNames.pop(0)
+        sql.execute(
+            f"INSERT INTO {tableName}({', '.join(columnNames)}) VALUES({', '.join(values)})", showOperation)
+    else:
+        sql.execute(
+            f"INSERT INTO {tableName}({', '.join(columns)}) VALUES({', '.join(values)}))", showOperation)

@@ -41,3 +41,25 @@ def updatecompletecolumn(showOperation, operation):
                         f"UPDATE {table} SET {column} = '{new}' WHERE id = {i}", showOperation)
         if operation.__contains__("-r") and table != "":
             updatecompletecolumn(showOperation, operation)
+
+
+
+# intern functions
+def updateIntern(tableName, columns, values, whereClause ,showOperation):
+    """
+    updates specific columns of a specific table using values it is given\n
+    returns nothing\n
+    parameters:
+    tableName -> name of the table to update\n
+    columns -> list of columnNames to update\n
+    values -> list of values to use for updating the given columns\n
+    whereClause -> the whereClause for further specifying which values to update\n
+    showOperation -> if it is true the sql operation is shown
+    """
+    if whereClause != "":
+        whereClause = "WHERE " + whereClause
+    s = []
+    values = sql.prepare(values)
+    for i in range(len(columns)):
+        s.append(columns[i] + " = " + values[i])
+    sql.execute(f"UPDATE {tableName} SET {', '.join(s)} {whereClause}", showOperation)       
