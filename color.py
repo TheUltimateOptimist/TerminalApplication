@@ -35,3 +35,7 @@ def printMagenta(s):
     takes a String and prints it in magenta
     """
     print(colored(s, "magenta"))
+
+
+def printColored(s, color):
+    print(colored(s, color))    

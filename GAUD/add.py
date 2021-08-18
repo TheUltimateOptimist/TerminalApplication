@@ -65,7 +65,7 @@ def addtable(showOperation, operation):
 
 
 # intern functions
-def addIntern(tableName, columns, values, showOperation):
+def addIntern(tableName, columns, values, showOperation, database = "personal_database"):
     """
     inserts a set of values into personal database\n
     returns nothing\n
@@ -80,14 +80,14 @@ def addIntern(tableName, columns, values, showOperation):
     values = sql.prepare(values)
     if columns[0] == "all":
         sql.execute(
-            f"INSERT INTO {tableName} VALUES({', '.join(values)})", showOperation)
+            f"INSERT INTO {tableName} VALUES({', '.join(values)})", showOperation, database=database)
     elif columns[0] == "all except id":
         columnNames = get.getcolumnnames(showOperation, tableName)
         for i in range(len(columnNames)):
             columnNames[i] = columnNames[i][0]
         columnNames.pop(0)
         sql.execute(
-            f"INSERT INTO {tableName}({', '.join(columnNames)}) VALUES({', '.join(values)})", showOperation)
+            f"INSERT INTO {tableName}({', '.join(columnNames)}) VALUES({', '.join(values)})", showOperation, database=database)
     else:
         sql.execute(
-            f"INSERT INTO {tableName}({', '.join(columns)}) VALUES({', '.join(values)}))", showOperation)
+            f"INSERT INTO {tableName}({', '.join(columns)}) VALUES({', '.join(values)}))", showOperation, database=database)

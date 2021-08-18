@@ -6,20 +6,22 @@
 from GAUD import get, update, delete, add
 import color
 import sql
-
+import functions
 
 # not included in terminal language
 def steps(id, showOperation):
-    result = get.getIntern("steps", ["steps_name", "steps_number", "steps_status"], f"steps_project_id = {str(id)}", showOperation)
+    result = get.getIntern("steps", ["steps_number", "steps_name", "steps_status"], f"steps_project_id = {str(id)}", showOperation)
+    entryColors = []
     for row in result:
         if int(row[2]) == 0:
-            color.printBlue(f"{row[1]}. {row[0]}")
+            entryColors.append("red")
         else:
-            color.printGreen(f"{row[1]}. {row[0]}")    
-    print("1: add step | 2: step done | 3: delete step")
+            entryColors.append("green")  
+    functions.printTable(result, ["number", "name", "status"], "blue", entryColors, "blue")         
+    print("a: add step | d: step done | r: remove step")
     next = input("next: ")
-    while next != "":
-        if next == "1":
+    if next != "":
+        if next == "a":
             title = input("title: ")
             number = input("number: ")
             if number == "":
@@ -27,23 +29,20 @@ def steps(id, showOperation):
             else:
                 sql.execute(f"UPDATE steps SET steps_number = steps_number + 1 WHERE steps_number >= {number}",showOperation) 
             add.addIntern("steps", ["all except id"], [title, int(number), 0, id], showOperation)
-        elif next == "2":
+        elif next == "d":
             number = input("number: ")
-            update.updateIntern("steps", ["steps_status"], [1], f"steps_name = '{result[int(number) - 1][0]}'", showOperation)
-        elif next == "3":
+            update.updateIntern("steps", ["steps_status"], [1], f"steps_name = '{result[int(number) - 1][1]}'", showOperation)
+        elif next == "r":
             number = input("number: ")
             sql.execute(f"UPDATE steps SET steps_number = steps_number + -1 WHERE steps_number > {number}" ,showOperation)
-            sql.execute(f"DELETE FROM steps WHERE steps_name = '{result[int(number) - 1][0]}'" ,showOperation) 
+            sql.execute(f"DELETE FROM steps WHERE steps_name = '{result[int(number) - 1][1]}'" ,showOperation) 
         steps(id, showOperation)       
 
 
 # included in terminal language
 def projects(showOperation, operation):
     result = get.getIntern("projects", ["projects_name", "projects_id"], "", showOperation)
-    i = 1
-    for row in result:
-        color.printBlue(f"{str(i)}. {row[0]}")
-        i = i + 1
+    functions.printTable(result, ["name", "id"], "blue", ["blue"], "blue", showIndexes=True)
     print("")
     print(f"a: add project | r: remove project | specific number: select project")
     next = input("next: ")

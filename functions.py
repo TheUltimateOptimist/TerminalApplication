@@ -1,5 +1,6 @@
 from termcolor import colored
 from colorama import init
+ 
 
 def toStringList(dimensions, list):
     rList = []
@@ -67,3 +68,10 @@ def printTable(table, columnNames, columnNamesColor, entryColors, surroundingCol
 
     # print end bar
     print(colored(topBar, surroundingColor))
+
+
+def toOneDimList(twoDimList, choosenIndex):
+    result = []
+    for row in twoDimList:
+        result.append(row[choosenIndex])
+    return result     

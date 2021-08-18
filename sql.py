@@ -11,7 +11,7 @@ import functions
 # functions:
 
 
-def execute(sqloperation, showOperation):
+def execute(sqloperation, showOperation, database = "personal_database"):
     """
     param1: String sqloperation -> sql operation to execute
     param2: Boolean showOperation -> should it print the sql operation
@@ -23,7 +23,7 @@ def execute(sqloperation, showOperation):
                 host="localhost",
                 user="root",
                 password="A1a1B2b2",
-                database="personal_database"
+                database=database
         ) as connection:
             cursor = connection.cursor()
             # print sql operation
@@ -56,4 +56,13 @@ def sql(showOperation, operation):
 def prepare(values):
     for i in range(len(values)):
         values[i] = format.value(values[i])
-    return values                        
+    return values    
+
+
+def valueExists(value, table, column):
+    result = execute(f"select {column} from {table}", False)
+    for row in result:
+        if str(row[0]) == str(value):
+            return True
+    return False        
+

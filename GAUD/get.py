@@ -66,7 +66,7 @@ def get(showOperation, operation):
 
 
 # intern functions
-def getIntern(tableName, columns, whereClause, showOperation):
+def getIntern(tableName, columns, whereClause, showOperation, database = "personal_database"):
     """
     retrieves data from the personal database\n
     returns a two dimensional array\n
@@ -82,7 +82,7 @@ def getIntern(tableName, columns, whereClause, showOperation):
         columnNames = "*"
     else:
         columnNames = ", ".join(columns)
-    result = sql.execute(f"SELECT {columnNames} FROM {tableName} {whereClause}", showOperation)
+    result = sql.execute(f"SELECT {columnNames} FROM {tableName} {whereClause}", showOperation, database=database)
     finalList = []  
     for i in range(len(result)):
         list = []

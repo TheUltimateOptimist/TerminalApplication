@@ -1,8 +1,7 @@
-              
+file = open("test2.py", "w")     
+file.write("print('Hallo Welt')")    
+file.close()  
+exec("test2")
    
-from termcolor import colored
-from colorama import init
 
-init()
-s = colored("dkfj", "green")
-print(colored(s,"dfdg"))
+

@@ -9,6 +9,7 @@ import sql
 import color
 from GAUD import get
 import format
+import functions
 
 
 # mitmenschen spalten
@@ -51,12 +52,7 @@ def getgroup(showOperation, operation):
             for f in result:
                 color.printBlue(f[1] + " " + f[2])
         else:
-            for i in result:
-                s = ''
-                for j in range(len(spalten)):
-                    s = s + spalten[j] + \
-                        colored(format.toHumanDate(i[j]), "blue") + ", "
-                print(s)
+            functions.printTable(result, functions.toOneDimList(get.getcolumnnames(showOperation, "mitmenschen"), 0), "blue", ["blue"], "blue", showIndexes=True)
         if operation.__contains__("-r") and beziehung != "":
             getgroup(showOperation, operation)
 

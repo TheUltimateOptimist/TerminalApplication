@@ -45,7 +45,7 @@ def updatecompletecolumn(showOperation, operation):
 
 
 # intern functions
-def updateIntern(tableName, columns, values, whereClause ,showOperation):
+def updateIntern(tableName, columns, values, whereClause ,showOperation, database = "personal_database"):
     """
     updates specific columns of a specific table using values it is given\n
     returns nothing\n
@@ -62,4 +62,4 @@ def updateIntern(tableName, columns, values, whereClause ,showOperation):
     values = sql.prepare(values)
     for i in range(len(columns)):
         s.append(columns[i] + " = " + values[i])
-    sql.execute(f"UPDATE {tableName} SET {', '.join(s)} {whereClause}", showOperation)       
+    sql.execute(f"UPDATE {tableName} SET {', '.join(s)} {whereClause}", showOperation, database=database)       

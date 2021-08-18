@@ -65,17 +65,17 @@ def taskDone(showOperation, task):
 def tasks(showOperation, operation):
     result = getTasks(showOperation, "")
     functions.printTable(result, ["priority", "title"], "blue", getTasks(showOperation, "-c"), "blue", True)
-    color.printBlue("1: view done tasks | 2: add new task | 3: task done | 4: change workondate")
+    color.printBlue("v: view done tasks | a: add new task | d: task done | w: change workondate")
     next = input("next: ")
     while next != "":
-        if next == "1":
+        if next == "v":
             functions.printTable(getTasks(showOperation, "-d"), ["priority", "title"], "blue", ["green"], "blue", showIndexes=True)
-        elif next == "2": 
+        elif next == "a": 
             addTask(showOperation)
-        elif next == "3":
+        elif next == "d":
             taskNumber = int(input("taskNumber: "))
             taskDone(showOperation, str(result[taskNumber -1][1]))
-        elif next == "4":
+        elif next == "w":
             taskNumber = int(input("taskNumber: "))
             newDate = input("new workondate: ")
             updateIntern("tasks", ["workondate"], [newDate], f"title = '{str(result[taskNumber - 1][1])}'", showOperation)

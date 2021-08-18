@@ -4,7 +4,6 @@
 from GAUD.get import getIntern
 from GAUD.add import addIntern
 import time
-import math
 from termcolor import colored
 from colorama import init
 
@@ -17,76 +16,35 @@ from Tables import tasks
 
 # functions:
 # math:
-def calculateSleepDuration(morning, evening):
-    morning = time.mktime(time.strptime(morning, "%Y-%m-%d %H:%M:%S"))
-    evening = time.mktime(time.strptime(evening, "%Y-%m-%d %H:%M:%S"))
-    t = morning - evening
-    if t < 0:
-        t = 24 * 3600 - math.fabs(t)
-        allSeconds = t
-        h = math.floor(t / 3600)
-        m = round((t - h * 3600) / 60)
-    else:
-        allSeconds = t
-        h = math.floor(t / 3600)
-        m = round(t - h * 3600)
-    return [h, m, allSeconds]
-
-
 def average(intList):
     v = 0
     for i in intList:
         v = v + i
     return round(v / len(intList))
 
-
-def calculateAverageBedTime(result, id):
-    # id = 1: morning
-    # id = 2: evening
-    minutes = 0
-    if id == 1:
-        for r in result:
-            minutes = minutes + \
-            int(str(r[id]).split(":")[0])*60 + int(str(r[id]).split(":")[1])
-        return format.secondsToHourMinuteFormat(round(minutes/len(result))*60)
-    elif id == 2:
-        for r in result:
-            hour = int(str(r[id]).split(":")[0])
-            if hour > 17:
-                hour = hour - 17
-            elif hour < 6:
-                hour = hour + 7
-            minutes = minutes + hour*60 + int(str(r[id]).split(":")[1])
-        s = format.secondsToHourMinuteFormat(round(minutes/len(result))*60)
-        hour = int(s.split(":")[0])  
-        if hour < 7:
-            hour = hour + 17
-        if hour >= 7:
-            hour = hour - 7
-        minute = s.split(":")[1]    
-        return f"{format.formatZero(hour)}:{minute}"      
-
-
-
 # Get:
 def sevendays(showOperation, operation):
     result = sql.execute(
-        f"SELECT * FROM schlafrhythmus WHERE datum <= {format.toDate(time.time())} AND datum >= {format.toDate(time.time() - 7 * 86400)}", showOperation)
-    sleepDurations = []
-    for i in range(len(result) - 1):
-        sleepDurations.append(
-            calculateSleepDuration('2021-12-12' + " " + str(result[i + 1][1]),
-                                   '2021-12-12' + " " + str(result[i][2]))[2])
-    for row in result:
-        color.printBlue(
-            format.toHumanDate(row[0]) + " " + "Morgens: " + format.toClockTime(str(row[1])) + ", " + "Abends: " + format.toClockTime(
-                str(row[2])))
-    color.printMagenta(
-        f"Du hast durchschnittlich {format.secondsToHourMinuteFormat(average(sleepDurations))} Stunden geschlafen")
-    color.printMagenta(
-        f"Du bist durchschnittlich um {calculateAverageBedTime(result, 1)} aufgestanden")
-    color.printMagenta(
-        f"Du bist durchschnittlich um {calculateAverageBedTime(result, 2)} schlafen gegangen")
+        f"SELECT * FROM sleep WHERE date <= {format.toDate(time.time())} AND date >= {format.toDate(time.time() - 7 * 86400)}", showOperation)
+    if len(result) > 0:    
+        sleepDurations = []
+        morningTimes = []
+        eveningTimes = []
+        for row in result:
+            et = time.strptime(str(row[1]), "%Y-%m-%d %H:%M:%S")
+            mt = time.strptime(str(row[2]), "%Y-%m-%d %H:%M:%S")
+            d = time.strptime(str(row[0]) + " 00:00:00", "%Y-%m-%d %H:%M:%S")
+            morningTimes.append(time.mktime(mt) - time.mktime(d))
+            eveningTimes.append(time.mktime(et) - time.mktime(d))
+            sleepDurations.append(time.mktime(mt) - time.mktime(et))
+        for row in result:
+            color.printBlue(format.toHumanDate(str(row[0])) + " " + "Abends: " + str(row[1]).split(" ")[1] + ", " + "Morgens: " + str(row[2]).split(" ")[1])
+        color.printMagenta(
+            f"Du hast durchschnittlich {format.secondsToHourMinuteFormat(average(sleepDurations))} Stunden geschlafen")
+        color.printMagenta(
+            f"Du bist durchschnittlich um {format.secondsToHourMinuteFormat(average(morningTimes) % 86400)} aufgestanden")
+        color.printMagenta(
+            f"Du bist durchschnittlich um {format.secondsToHourMinuteFormat(average(eveningTimes) % 86400)} schlafen gegangen")
 
 
 # Add
@@ -120,15 +78,12 @@ def tobed(showOperation, operation):
         i = i + 1  
     sql.execute(f"UPDATE habits SET habits_done = 'false'", showOperation)      
     sql.execute(
-        f"UPDATE schlafrhythmus SET abends = '{currentTime.tm_hour}:{currentTime.tm_min}:{currentTime.tm_sec}' WHERE datum = '{currentTime.tm_year}-{currentTime.tm_mon}-{currentTime.tm_mday}'", showOperation)
+        f"INSERT INTO sleep(date, evening) VALUES('{currentTime.tm_year}-{currentTime.tm_mon}-{currentTime.tm_mday}', '{format.currentDateTime()}')", showOperation)
     color.printGreen("Good Night")
 
 
 def frombed(showOperation, operation):
-    currentTime = time.localtime(time.time())
-    addIntern("schlafrhythmus", ["all"], [format.currentDate(), format.currentTime(), "00:00:00"], showOperation)
-    # sql.execute(
-    #    f"INSERT INTO schlafrhythmus VALUES('{currentTime.tm_year}-{currentTime.tm_mon}-{currentTime.tm_mday}', '{currentTime.tm_hour}:{currentTime.tm_min}:{currentTime.tm_sec}', '00:00:00')", showOperation)
+    sql.execute(f"UPDATE sleep SET morning = '{format.currentDateTime()}' WHERE morning IS NULL", showOperation)
     color.printGreen("time added")
     tasks.printTasks(tasks.getTasks(False, ""), "red")
     print("")
@@ -142,3 +97,4 @@ def frombed(showOperation, operation):
         else:
             color.printRed(str(i) + ". " + str(row[1]) + " " + str(row[0])) 
         i = i + 1
+
