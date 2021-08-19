@@ -1,0 +1,2 @@
+# ignores the following windows executable needed for counting the lines of code
+/cloc.exe
