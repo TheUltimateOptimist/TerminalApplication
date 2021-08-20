@@ -58,14 +58,14 @@ def addtable(showOperation, operation):
             else:
                 columnDefinition = columnDefinition + ","
             sqloperation = sqloperation + columnDefinition
-        sql.execute(sqloperation, showOperation)
+        sql.execute(sqloperation, showOperation, "post")
         color.printGreen(f'table {tableName} successfully created')
         if operation.__contains__("-r") and tableName != "":
             addtable(showOperation, operation)
 
 
 # intern functions
-def addIntern(tableName, columns, values, showOperation, database = "personal_database"):
+def addIntern(tableName, columns, values, showOperation):
     """
     inserts a set of values into personal database\n
     returns nothing\n
@@ -80,14 +80,14 @@ def addIntern(tableName, columns, values, showOperation, database = "personal_da
     values = sql.prepare(values)
     if columns[0] == "all":
         sql.execute(
-            f"INSERT INTO {tableName} VALUES({', '.join(values)})", showOperation, database=database)
+            f"INSERT INTO {tableName} VALUES({', '.join(values)})", showOperation, "post")
     elif columns[0] == "all except id":
         columnNames = get.getcolumnnames(showOperation, tableName)
         for i in range(len(columnNames)):
             columnNames[i] = columnNames[i][0]
         columnNames.pop(0)
         sql.execute(
-            f"INSERT INTO {tableName}({', '.join(columnNames)}) VALUES({', '.join(values)})", showOperation, database=database)
+            f"INSERT INTO {tableName}({', '.join(columnNames)}) VALUES({', '.join(values)})", showOperation, "post")
     else:
         sql.execute(
-            f"INSERT INTO {tableName}({', '.join(columns)}) VALUES({', '.join(values)}))", showOperation, database=database)
+            f"INSERT INTO {tableName}({', '.join(columns)}) VALUES({', '.join(values)})", showOperation, "post")

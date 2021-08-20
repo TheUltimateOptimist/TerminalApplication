@@ -13,10 +13,13 @@ import functions
 
 
 # mitmenschen spalten
-spalten = ["Id: ", "Vorname: ", "Nachname: ", "Geburtsdatum: ", "Handynummer: ", "Beziehung: ", "Lieblingsessen: ","Mutter: ", "Vater: ", "Ehepartner: ", "Job: "]
+spalten = ["Id: ", "Vorname: ", "Nachname: ", "Geburtsdatum: ", "Handynummer: ",
+           "Beziehung: ", "Lieblingsessen: ", "Mutter: ", "Vater: ", "Ehepartner: ", "Job: "]
 
 # functions:
 # Get:
+
+
 def nget(showOperation, operation):
     columnName = operation.split(" ")[1]
     firstname = "'" + input("firstname: ") + "'"
@@ -24,13 +27,13 @@ def nget(showOperation, operation):
         lastname = "'" + input("lastname: ") + "'"
         if columnName == "human":
             result = sql.execute(
-                f"SELECT * FROM mitmenschen WHERE firstname = {firstname} AND lastname = {lastname}", showOperation)
+                f"SELECT * FROM mitmenschen WHERE firstname = {firstname} AND lastname = {lastname}", showOperation, "get")
             for i in range(len(result[0])):
                 color.printBlue(
                     f"{get.getcolumnnames(showOperation, 'mitmenschen')[i][0]}: {format.toHumanDate(result[0][i])}")
         else:
             result = sql.execute(
-                f"SELECT {columnName} FROM mitmenschen WHERE firstname = {firstname} AND lastname = {lastname}", showOperation)
+                f"SELECT {columnName} FROM mitmenschen WHERE firstname = {firstname} AND lastname = {lastname}", showOperation, "get")
             color.printBlue(
                 f"{columnName}: {format.toHumanDate(result[0][0])}")
         if operation.__contains__("-r") and columnName != "":
@@ -46,13 +49,14 @@ def getgroup(showOperation, operation):
     beziehung = "'" + input("Beziehung: ") + "'"
     if beziehung != "":
         result = sql.execute(
-            f"SELECT * FROM mitmenschen WHERE relation = {beziehung}", showOperation)
+            f"SELECT * FROM mitmenschen WHERE relation = {beziehung}", showOperation, "get")
         if onlyNames:
             color.printBlue("Names: ")
             for f in result:
                 color.printBlue(f[1] + " " + f[2])
         else:
-            functions.printTable(result, functions.toOneDimList(get.getcolumnnames(showOperation, "mitmenschen"), 0), "blue", ["blue"], "blue", showIndexes=True)
+            functions.printTable(result, functions.toOneDimList(get.getcolumnnames(
+                showOperation, "mitmenschen"), 0), "blue", ["blue"], "blue", showIndexes=True)
         if operation.__contains__("-r") and beziehung != "":
             getgroup(showOperation, operation)
 
@@ -63,7 +67,7 @@ def nextbirthday(showOperation, operation):
     else:
         number = 1
     result = sql.execute(
-        f"SELECT birthday, firstname, lastname FROM mitmenschen WHERE DAYOFYEAR(birthday) >= DAYOFYEAR(CURDATE()) ORDER BY DAYOFYEAR(birthday);", showOperation)
+        f"SELECT birthday, firstname, lastname FROM mitmenschen WHERE DAYOFYEAR(birthday) >= DAYOFYEAR(CURDATE()) ORDER BY DAYOFYEAR(birthday);", showOperation, "get")
     if len(result) > 0:
         for i in range(number):
             date = str(result[i][0]).split("-")[2] + "." + \

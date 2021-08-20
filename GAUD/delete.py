@@ -13,7 +13,7 @@ def deleterow(showOperation, operation):
     table = input("table: ")
     if table != "":
         whereclause = input("where clause: ")
-        sql.execute(f"DELETE FROM {table} WHERE {whereclause}", showOperation)
+        sql.execute(f"DELETE FROM {table} WHERE {whereclause}", "post")
         if operation.__contains__("-r") and table != "":
             deleterow(showOperation, operation)
 
@@ -22,7 +22,7 @@ def deletecolumn(showOperation, operation):
     table = input("table")
     if table != "":
         column = input("column")
-        sql.execute(f"ALTER TABLE {table} DROP COLUMN {column}", showOperation)
+        sql.execute(f"ALTER TABLE {table} DROP COLUMN {column}", "post")
         if operation.__contains__("-r") and table != "":
             deletecolumn(showOperation, operation)
 
@@ -30,7 +30,7 @@ def deletecolumn(showOperation, operation):
 def deletetable(showOperation, operation):
     tableName = input("table name: ")
     if tableName != "":
-        if sql.execute(f"DROP TABLE {tableName}", showOperation) != None:
+        if sql.execute(f"DROP TABLE {tableName}", "post") != None:
             color.printGreen(f"table {tableName} successfully deleted")
         if operation.__contains__("-r") and tableName != "":
             deletetable(showOperation, operation)

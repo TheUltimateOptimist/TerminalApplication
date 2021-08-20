@@ -13,7 +13,6 @@ import format
 def addquiz(showOperation, sqloperation):
     quizName = input("Enter the quiz name: ")
     if quizName != "":
-        fachgebiet = input("Enter the fachgebiet: ")
         c.printBlue("Enter s to stop")
         frage = ""
         fragenAntwortListe = []
@@ -34,30 +33,30 @@ def addquiz(showOperation, sqloperation):
                 else:
                     antwort = input("Enter the answer: ")
                 fragenAntwortListe.append([frage, antwort, oneAnswer])
-        add.addIntern("quiz", ["all except id"], [quizName, fachgebiet, 0, len(
-            fragenAntwortListe)], showOperation, database="quizbase")
-        quizId = int(get.getIntern("quiz", [
-                     "id"], f"name = '{quizName}'", showOperation, database="quizbase")[0][0])
+        add.addIntern("quizes", ["quiz_name", "quiz_learned", "quiz_numberofquestions"], [quizName, 0, len(
+            fragenAntwortListe)], showOperation)
+        quizId = int(get.getIntern("quizes", [
+                     "quiz_id"], f"quiz_name = '{quizName}' AND quiz_numberofquestions = {len(fragenAntwortListe)}", showOperation)[0][0])
         for row in fragenAntwortListe:
-            add.addIntern("fragen", ["all except id"], [
-                          row[0], row[1], quizId, int(row[2])], showOperation, database="quizbase")
+            add.addIntern("questions", ["question_question", "question_answer", "question_classification", "question_quiz_id"], [
+                          row[0], row[1], int(row[2]), quizId], showOperation)
         if sqloperation.__contains__("-r"):
             addquiz(showOperation, sqloperation)
 
 
 def practicequiz(showOperation, sqloperation):
-    quizes = get.getIntern("quiz", [
-                           "name", "fachgebiet", "gelernt", "fragenzahl"], "", showOperation, database="quizbase")
-    functions.printTable(quizes, ["name", "fachgebiet", "gelernt", "fragenzahl"], "blue", [
+    quizes = get.getIntern("quizes", [
+                           "quiz_name", "quiz_learned", "quiz_numberofquestions"], "", showOperation)
+    functions.printTable(quizes, ["quiz_name", "quiz_learned", "quiz_numberofquestions"], "blue", [
                          "cyan"], "blue", showIndexes=True)
     quizNumber = input("Enter the quiz number: ")
     if quizNumber != "":
-        quizId = get.getIntern("quiz", [
-                               "id", ], f"name = '{quizes[int(quizNumber ) - 1][0]}'", showOperation, database="quizbase")[0][0]
+        quizId = get.getIntern("quizes", [
+                               "quiz_id", ], f"quiz_name = '{quizes[int(quizNumber ) - 1][0]}'", showOperation)[0][0]
         start = format.currentDateTime()
         richtig = 0
-        fragenAntwortListe = get.getIntern("fragen", [
-                                           "name", "antwort", "eine_antwort"], f"quiz_id = {quizId}", showOperation, database="quizbase")
+        fragenAntwortListe = get.getIntern("questions", [
+                                           "question_question", "question_answer", "question_classification"], f"question_quiz_id = {quizId}", showOperation)
         for row in fragenAntwortListe:
             c.printBlue(row[0])
             if int(row[2]) == 1:
@@ -97,11 +96,11 @@ def practicequiz(showOperation, sqloperation):
         c.printGreen(
             f"Du hast {richtig} von {len(fragenAntwortListe)} Fragen richtig beantwortet")
         if richtig == len(fragenAntwortListe):
-            update.updateIntern("quiz", ["gelernt"], [
-                                1], f"id = {quizId}", showOperation, database="quizbase")
+            update.updateIntern("quizes", ["quiz_learned"], [
+                                1], f"id = {quizId}", showOperation)
             c.printGreen("Congratulations, you got it!!")
-        add.addIntern("quizing", ["all"], [start, end, quizId, str(
-            richtig)], showOperation, database="quizbase")
+        add.addIntern("quizing", ["quizing_datetime", "quizing_quiz_id", "quizing_correct"], [start, quizId,
+                                                                                              richtig], showOperation)
 
 
 def addquizquestion(showOperation, sqloperation):

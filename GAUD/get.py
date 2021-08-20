@@ -9,7 +9,7 @@ import color
 import functions
 
 
-#functions:
+# functions:
 def getcolumnnames(showOperation, operation):
     if operation.__contains__("getcolumnnames"):
         table = input("table: ")
@@ -17,7 +17,7 @@ def getcolumnnames(showOperation, operation):
         table = operation
     if table != "":
         result = sql.execute(
-            f"SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{table}' ORDER BY ORDINAL_POSITION", showOperation)
+            f"SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{table}' ORDER BY ORDINAL_POSITION", showOperation, "get")
         columnNames = []
         for i in range(len(result)):
             columnNames.append(
@@ -31,12 +31,12 @@ def getcolumnnames(showOperation, operation):
 
 
 def getColumnNames(table, showOperation):
-    result = sql.execute(f"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{table}' ORDER BY ORDINAL_POSITION", showOperation)
+    result = sql.execute(
+        f"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{table}' ORDER BY ORDINAL_POSITION", showOperation, "get")
     rList = []
     for row in result:
         rList.append(str(row[0]))
-    return rList    
-
+    return rList
 
 
 def get(showOperation, operation):
@@ -58,15 +58,15 @@ def get(showOperation, operation):
             else:
                 sqloperation = f"SELECT {columns} FROM {table} WHERE {whereclause}"
             columns = columns.split(", ")
-        result = sql.execute(sqloperation, showOperation)
-        functions.printTable(functions.toStringList(2, result), columns, "blue", ["cyan"], "blue", True)
+        result = sql.execute(sqloperation, showOperation, "get")
+        functions.printTable(functions.toStringList(
+            2, result), columns, "blue", ["cyan"], "blue", True)
         if operation.__contains__("-r") and table != "":
             get(showOperation, operation)
 
 
-
 # intern functions
-def getIntern(tableName, columns, whereClause, showOperation, database = "personal_database"):
+def getIntern(tableName, columns, whereClause, showOperation):
     """
     retrieves data from the personal database\n
     returns a two dimensional array\n
@@ -77,19 +77,17 @@ def getIntern(tableName, columns, whereClause, showOperation, database = "person
     showOperation -> if true sql operation will be printed
     """
     if whereClause != "":
-        whereClause = "WHERE " + whereClause    
+        whereClause = "WHERE " + whereClause
     if columns[0] == "all":
         columnNames = "*"
     else:
         columnNames = ", ".join(columns)
-    result = sql.execute(f"SELECT {columnNames} FROM {tableName} {whereClause}", showOperation, database=database)
-    finalList = []  
+    result = sql.execute(
+        f"SELECT {columnNames} FROM {tableName} {whereClause}", showOperation, "get")
+    finalList = []
     for i in range(len(result)):
         list = []
         for j in range(len(result[i])):
             list.append(str(result[i][j]))
-        finalList.append(list)        
+        finalList.append(list)
     return finalList
-            
-
-        
