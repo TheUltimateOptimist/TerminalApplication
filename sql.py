@@ -38,6 +38,8 @@ def execute(sqloperation, showOperation, operationType):
             return result
     except Error as e:
         color.printRed(e)"""
+    if showOperation:
+        color.printMagenta("SQL: " + sqloperation)
     if operationType == "get":
         data = requests.get(
             f"https://my-personal-cloud.herokuapp.com/get/{sqloperation}")

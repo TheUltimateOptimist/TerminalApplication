@@ -37,9 +37,9 @@ def addquiz(showOperation, sqloperation):
             fragenAntwortListe)], showOperation)
         quizId = int(get.getIntern("quizes", [
                      "quiz_id"], f"quiz_name = '{quizName}' AND quiz_numberofquestions = {len(fragenAntwortListe)}", showOperation)[0][0])
-        for row in fragenAntwortListe:
-            add.addIntern("questions", ["question_question", "question_answer", "question_classification", "question_quiz_id"], [
-                          row[0], row[1], int(row[2]), quizId], showOperation)
+        for i, row in enumerate(fragenAntwortListe):
+            add.addIntern("questions", ["question_question", "question_answer", "question_classification", "question_quiz_id", "question_number"], [
+                          row[0], row[1], int(row[2]), quizId, i + 1], showOperation)
         if sqloperation.__contains__("-r"):
             addquiz(showOperation, sqloperation)
 
@@ -56,7 +56,7 @@ def practicequiz(showOperation, sqloperation):
         start = format.currentDateTime()
         richtig = 0
         fragenAntwortListe = get.getIntern("questions", [
-                                           "question_question", "question_answer", "question_classification"], f"question_quiz_id = {quizId}", showOperation)
+                                           "question_question", "question_answer", "question_classification", "question_number"], f"question_quiz_id = {quizId} ORDER BY question_number ASC", showOperation)
         for row in fragenAntwortListe:
             c.printBlue(row[0])
             if int(row[2]) == 1:
@@ -97,7 +97,7 @@ def practicequiz(showOperation, sqloperation):
             f"Du hast {richtig} von {len(fragenAntwortListe)} Fragen richtig beantwortet")
         if richtig == len(fragenAntwortListe):
             update.updateIntern("quizes", ["quiz_learned"], [
-                                1], f"id = {quizId}", showOperation)
+                                1], f"quiz_id = {quizId}", showOperation)
             c.printGreen("Congratulations, you got it!!")
         add.addIntern("quizing", ["quizing_datetime", "quizing_quiz_id", "quizing_correct"], [start, quizId,
                                                                                               richtig], showOperation)
