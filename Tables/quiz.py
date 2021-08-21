@@ -159,4 +159,6 @@ def removequizquestion(showOperation, sqloperation):
 
 
 def removequiz(showOperation, sqloperation):
-    print("not yet defined")
+    quizId = requestQuizId(showOperation)
+    sql.execute(
+        f"DELETE FROM quizes WHERE quiz_id = {quizId}", showOperation, "post")
