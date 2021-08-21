@@ -1,6 +1,6 @@
 from termcolor import colored
 from colorama import init
- 
+
 
 def toStringList(dimensions, list):
     rList = []
@@ -12,15 +12,15 @@ def toStringList(dimensions, list):
             rowList = []
             for element in row:
                 rowList.append(str(element))
-            rList.append(rowList)   
-    return rList         
+            rList.append(rowList)
+    return rList
 
 
-def printTable(table, columnNames, columnNamesColor, entryColors, surroundingColor, showIndexes = False):
+def printTable(table, columnNames, columnNamesColor, entryColors, surroundingColor, showIndexes=False):
     if len(entryColors) == 1:
-        for i in range(len(table) -1):
+        for i in range(len(table) - 1):
             entryColors.append(entryColors[0])
-    table = toStringList(2,table)
+    table = toStringList(2, table)
     if showIndexes == True:
         columnNames.reverse()
         columnNames.append("")
@@ -30,7 +30,7 @@ def printTable(table, columnNames, columnNamesColor, entryColors, surroundingCol
             row.reverse()
             row.append(str(i))
             row.reverse()
-            i = i + 1       
+            i = i + 1
     init()
     # calculate max Lengths:
     maxLengths = []
@@ -52,8 +52,9 @@ def printTable(table, columnNames, columnNamesColor, entryColors, surroundingCol
     s = colored("| ", surroundingColor)
     i = 0
     for element in columnNames:
-        s = s + (f"{colored(element, columnNamesColor)}" + (maxLengths[i] - len(element))*" " + colored("| ", surroundingColor)) 
-        i = i + 1  
+        s = s + (f"{colored(element, columnNamesColor)}" +
+                 (maxLengths[i] - len(element))*" " + colored("| ", surroundingColor))
+        i = i + 1
     print(s)
 
     # print bottomBar
@@ -63,7 +64,8 @@ def printTable(table, columnNames, columnNamesColor, entryColors, surroundingCol
     for i in range(len(table)):
         entry = colored("| ", surroundingColor)
         for j in range(len(columnNames)):
-            entry = entry + colored(table[i][j], entryColors[i]) + (maxLengths[j] - len(table[i][j]))*" " + colored("| ", surroundingColor)
+            entry = entry + colored(table[i][j], entryColors[i]) + (
+                maxLengths[j] - len(table[i][j]))*" " + colored("| ", surroundingColor)
         print(entry)
 
     # print end bar
@@ -74,4 +76,4 @@ def toOneDimList(twoDimList, choosenIndex):
     result = []
     for row in twoDimList:
         result.append(row[choosenIndex])
-    return result     
+    return result

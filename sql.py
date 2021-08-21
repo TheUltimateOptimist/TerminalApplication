@@ -52,7 +52,7 @@ def execute(sqloperation, showOperation, operationType):
 def sql(showOperation, operation):
     sqloperation = input("SQL Command: ")
     if sqloperation != "":
-        result = execute(sqloperation, showOperation)
+        result = execute(sqloperation, showOperation, "post")
         if len(result) > 0:
             columnNames = []
             for i in range(len(result[0])):
