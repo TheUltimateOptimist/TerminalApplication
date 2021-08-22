@@ -28,7 +28,7 @@ def add(showOperation, operation):
                 s = s + values[i] + ", "
             else:
                 s = s + values[i]
-        sql.execute(f"INSERT INTO {table} VALUES({s})", showOperation)
+        sql.execute(f"INSERT INTO {table} VALUES({s})", showOperation, "post")
         if operation.__contains__("-r") and table != "":
             add(showOperation, operation)
 
@@ -38,7 +38,7 @@ def addcolumn(showOperation, operation):
     if table != "":
         columndefinition = input("columnDefinition: ")
         sql.execute(
-            f"ALTER TABLE {table} ADD {columndefinition}", showOperation)
+            f"ALTER TABLE {table} ADD {columndefinition}", showOperation, "post")
         if operation.__contains__("-r") and table != "":
             addcolumn(showOperation, operation)
 
