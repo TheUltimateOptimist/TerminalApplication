@@ -52,14 +52,18 @@ def execute(sqloperation, showOperation, operationType):
 def sql(showOperation, operation):
     sqloperation = input("SQL Command: ")
     if sqloperation != "":
-        result = execute(sqloperation, showOperation, "post")
-        if len(result) > 0:
-            columnNames = []
-            for i in range(len(result[0])):
-                columnNames.append("")
-            functions.printTable(result, columnNames, "blue", [
-                                 "cyan"], "blue", True)
-        color.printGreen("Operation successfull")
+        if operation.__contains__("-get"):
+            result = execute(sqloperation, showOperation, "get")
+            print(result)
+            if len(result) > 0:
+                columnNames = []
+                for i in range(len(result[0])):
+                    columnNames.append("")
+                functions.printTable(result, columnNames, "blue", [
+                    "cyan"], "blue", True)
+            color.printGreen("Operation successfull")
+        elif operation.__contains__("-post"):
+            execute(sqloperation, showOperation, "post")
         if operation.__contains__("-r") and sqloperation != "":
             sql(showOperation, operation)
 

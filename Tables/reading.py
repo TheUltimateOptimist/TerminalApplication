@@ -16,8 +16,11 @@ def addbook(showOperation, operation):
         title = input("title: ")
     author = input("author: ")
     topic = input("topic: ")
+    pages = input("pages: ")
     sql.execute(
-        f"INSERT INTO books VALUES('{title}', '{author}', '{topic}', 1)", showOperation, "post")
+        f"INSERT INTO books(title, author, topic, page, pages) VALUES('{title}', '{author}', '{topic}', 1, {int(pages)})", showOperation, "post")
+    if operation.__contains__("-r"):
+        addbook(showOperation, operation)
 
 
 def read(showOperation, operation):
