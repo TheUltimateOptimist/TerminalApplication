@@ -81,7 +81,7 @@ def addquiz(showOperation, sqloperation):
     quizName = input("Enter the quiz name: ")
     if quizName != "":
         fragenAntwortListe = requestQuestions()
-        saveQuiz(quizName, fragenAntwortListe, showOperation)
+        saveQuiz(quizName, len(fragenAntwortListe), showOperation)
         quizId = int(get.getIntern("quizes", [
                      "quiz_id"], f"quiz_name = '{quizName}' AND quiz_numberofquestions = {len(fragenAntwortListe)}", showOperation)[0][0])
         saveQuestions(fragenAntwortListe, quizId, showOperation)
@@ -160,5 +160,6 @@ def removequizquestion(showOperation, sqloperation):
 
 def removequiz(showOperation, sqloperation):
     quizId = requestQuizId(showOperation)
+    sql.execute(f"DELETE FROM questions WHERE question_quiz_id = {quizId}")
     sql.execute(
         f"DELETE FROM quizes WHERE quiz_id = {quizId}", showOperation, "post")
