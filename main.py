@@ -3,14 +3,20 @@
 # third party imports:
 
 # first party imports:
+from sql import execute
 import color
 import terminalLanguage
 
 
+# starting the server
+def initializeServer():
+    print("starting server...")
+    result = execute("", False, "start")
+    color.printGreen("server successfully started")
 
 
-# main function:
-def main():
+# interact with user
+def interact():
     showOperation = False
     operation = input("What's up my friend?> ")
     if operation.__contains__("-s"):
@@ -29,9 +35,15 @@ def main():
         if not found and operation != "":
             color.printRed("ERROR: Unknown Operation")
         elif operation != "":  # exits the program if operation is empty
-            main()
+            interact()
 
 
-color.printMagenta("Welcome to Jonathan's personal database")
-color.printMagenta("Enter lhelp to view all possible operations")
+# main function:
+def main():
+    initializeServer()
+    color.printMagenta("Welcome to Jonathan's personal database")
+    color.printMagenta("Enter lhelp to view all possible operations")
+    interact()
+
+
 main()

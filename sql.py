@@ -47,6 +47,9 @@ def execute(sqloperation, showOperation, operationType):
     elif operationType == "post":
         requests.post(
             "https://my-personal-cloud.herokuapp.com/post", data={"sql": sqloperation})
+    elif operationType == "start":
+        data = requests.get("https://my-personal-cloud.herokuapp.com")
+        return data
 
 
 def sql(showOperation, operation):
@@ -64,6 +67,9 @@ def sql(showOperation, operation):
             color.printGreen("Operation successfull")
         elif operation.__contains__("-post"):
             execute(sqloperation, showOperation, "post")
+        else:
+            color.printRed(
+                "Error: specify -get or -post so a proper request can be executed")
         if operation.__contains__("-r") and sqloperation != "":
             sql(showOperation, operation)
 
