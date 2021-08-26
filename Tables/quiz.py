@@ -160,6 +160,7 @@ def removequizquestion(showOperation, sqloperation):
 
 def removequiz(showOperation, sqloperation):
     quizId = requestQuizId(showOperation)
-    sql.execute(f"DELETE FROM questions WHERE question_quiz_id = {quizId}")
+    sql.execute(
+        f"DELETE FROM questions WHERE question_quiz_id = {quizId}", showOperation, "post")
     sql.execute(
         f"DELETE FROM quizes WHERE quiz_id = {quizId}", showOperation, "post")
