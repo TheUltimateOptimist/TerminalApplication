@@ -34,7 +34,7 @@ def interact():
 
         if not found and operation != "":
             color.printRed("ERROR: Unknown Operation")
-        elif operation != "":  # exits the program if operation is empty
+        if operation != "":  # exits the program if operation is empty
             interact()
 
 
