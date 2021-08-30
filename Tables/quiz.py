@@ -146,6 +146,8 @@ def addquizquestions(showOperation, sqloperation):
     if quizId != 0:
         fragenAntwortListe = requestQuestions()
         saveQuestions(fragenAntwortListe, quizId, showOperation)
+        sql.execute(
+            f"UPDATE quizes set quiz_numberofquestions = {len(fragenAntwortListe) + lengthOfQuiz(quizId, showOperation)} WHERE quiz_id = {quizId}", showOperation, "post")
 
 
 def removequizquestion(showOperation, sqloperation):
