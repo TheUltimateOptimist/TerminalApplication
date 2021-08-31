@@ -38,4 +38,8 @@ def printMagenta(s):
 
 
 def printColored(s, color):
-    print(colored(s, color))    
+    print(colored(s, color))
+
+
+def coloredText(text, color):
+    return colored(text, color)

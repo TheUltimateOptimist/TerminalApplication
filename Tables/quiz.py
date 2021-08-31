@@ -10,8 +10,31 @@ import functions
 import format
 
 
-def lengthOfQuiz(quizId, showOperation):
-    return int(get.getIntern("quizes", ["numberofquestions"], f"quiz_id = {quizId}", showOperation)[0][0])
+def testFunction(testString):
+    testList = testString.split(';')
+    file = open("test_function.py", "w")
+    file.write(
+        "from write_function import function\nfrom color import coloredText, printGreen, printRed\n")
+    file.close()
+    file = open("test_function.py", "a")
+    file.write("def test():\n")
+    file.write(f"   tests = {len(testList)}\n   passedTests = 0\n")
+    for specificTest in testList:
+        testData = specificTest.split(": ")
+        file.write(
+            f"   if {testData[0]} == {testData[1]}:\n      passedTests = passedTests + 1\n")
+    file.write(
+        "   if passedTests >= tests:\n      printGreen('all tests passed')\n      return True\n   else:\n      printRed(f'{passedTests} of {tests} tests passed')\n      return False")
+    file.close()
+    from test_function import test
+    return test()
+
+
+def updateQuizLength(quizId, showOperation):
+    length = int(sql.execute(
+        f"SELECT count(*) FROM questions WHERE question_quiz_id = {quizId}", showOperation, "get")[0][0])
+    sql.execute(
+        f"UPDATE quizes set quiz_numberofquestions = {length} WHERE quiz_id = {quizId}", showOperation, "post")
 
 
 def requestQuizId(showOperation):
@@ -32,7 +55,7 @@ def requestQuizId(showOperation):
         return 0
 
 
-def requestQuestions():
+def requestQuestions(quizId, showOperation):
     c.printBlue("Enter s to stop")
     frage = ""
     fragenAntwortListe = []
@@ -40,8 +63,8 @@ def requestQuestions():
         frage = input("Enter the question: ")
         if frage != "s":
             oneAnswer = input(
-                "Enter 0 or 1 or 2 depending on whether there is only one correct answer: ")
-            if(oneAnswer == "2"):
+                "Enter 0 or 1 or 2 or 3 depending on whether there is only one correct answer: ")
+            if oneAnswer == "2":
                 antworten = []
                 c.printBlue(
                     "start answer with 'correct' if it is the correct one")
@@ -50,9 +73,11 @@ def requestQuestions():
                     antworten.append(text)
                     text = input("Enter next answer: ")
                 antwort = "--a--".join(antworten)
+            elif oneAnswer == 3:
+                antwort = input("Enter the tests: ")
             else:
                 antwort = input("Enter the answer: ")
-            fragenAntwortListe.append([frage, antwort, oneAnswer])
+            saveQuestion([frage, antwort, oneAnswer], quizId, showOperation)
     return fragenAntwortListe
 
 
@@ -66,25 +91,23 @@ def requestSpecificQuestionData(quizId, showOperation):
     return questions[int(questionNumber) - 1]
 
 
-def saveQuestions(fragenAntwortListe, quizId, showOperation):
-    for row in fragenAntwortListe:
-        add.addIntern("questions", ["question_question", "question_answer", "question_classification", "question_quiz_id"], [
-            row[0], row[1], int(row[2]), quizId], showOperation)
+def saveQuestion(fragenAntwortListe, quizId, showOperation):
+    add.addIntern("questions", ["question_question", "question_answer", "question_classification", "question_quiz_id"], [
+        fragenAntwortListe[0], fragenAntwortListe[1], int(fragenAntwortListe[2]), quizId], showOperation)
 
 
-def saveQuiz(quizName, numberOfQuestions, showOperation):
+def saveQuiz(quizName, showOperation):
     add.addIntern("quizes", ["quiz_name", "quiz_learned", "quiz_numberofquestions"], [
-                  quizName, 0, numberOfQuestions], showOperation)
+                  quizName, 0, 0], showOperation)
 
 
 def addquiz(showOperation, sqloperation):
     quizName = input("Enter the quiz name: ")
     if quizName != "":
-        fragenAntwortListe = requestQuestions()
-        saveQuiz(quizName, len(fragenAntwortListe), showOperation)
+        saveQuiz(quizName, showOperation)
         quizId = int(get.getIntern("quizes", [
-                     "quiz_id"], f"quiz_name = '{quizName}' AND quiz_numberofquestions = {len(fragenAntwortListe)}", showOperation)[0][0])
-        saveQuestions(fragenAntwortListe, quizId, showOperation)
+                     "quiz_id"], f"quiz_name = '{quizName}'", showOperation)[0][0])
+        requestQuestions(quizId, showOperation)
         if sqloperation.__contains__("-r"):
             addquiz(showOperation, sqloperation)
 
@@ -131,6 +154,12 @@ def practicequiz(showOperation, sqloperation):
                     richtig = richtig + 1
                 else:
                     c.printRed(f"Wrong: {correctNumber} is correct")
+            elif int(row[2]) == 3:
+                c.printGreen(
+                    "Go to C:Users/JDuec/ta/write_function.py and implement the function 'function'")
+                s = input("If done enter anything to continue! ")
+                if testFunction(row[1]):
+                    richtig = richtig + 1
         c.printGreen(
             f"Du hast {richtig} von {len(fragenAntwortListe)} Fragen richtig beantwortet")
         if richtig == len(fragenAntwortListe):
@@ -144,10 +173,8 @@ def practicequiz(showOperation, sqloperation):
 def addquizquestions(showOperation, sqloperation):
     quizId = requestQuizId(showOperation)
     if quizId != 0:
-        fragenAntwortListe = requestQuestions()
-        saveQuestions(fragenAntwortListe, quizId, showOperation)
-        sql.execute(
-            f"UPDATE quizes set quiz_numberofquestions = {len(fragenAntwortListe) + lengthOfQuiz(quizId, showOperation)} WHERE quiz_id = {quizId}", showOperation, "post")
+        requestQuestions(quizId, showOperation)
+        updateQuizLength(quizId, showOperation)
 
 
 def removequizquestion(showOperation, sqloperation):
