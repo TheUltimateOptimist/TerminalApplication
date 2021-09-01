@@ -2,8 +2,6 @@
 
 # third party imports:
 import requests
-import json
-
 # first party imports:
 import color
 import format

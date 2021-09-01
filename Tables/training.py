@@ -64,12 +64,13 @@ def train(showOperation, operation):
     exercise = input("first exercise: ")
     if exercise != "":
         if exerciseExists(exercise, showOperation):
+            secondsSinceEpoch = time.time()
             currentTime = format.currentDateTime()
             print(currentTime)
             sql.execute(
-                f"INSERT INTO training(training_date) VALUES('{currentTime}')", showOperation, "post")
+                f"INSERT INTO training(training_date, training_duration) VALUES('{currentTime}', 0)", showOperation, "post")
             tid = str(sql.execute(
-                f"SELECT training_id FROM training WHERE training_date = '{currentTime}'", showOperation)[0][0])
+                f"SELECT training_id FROM training WHERE training_date = '{currentTime}'", showOperation, "get")[0][0])
             while exercise != "":
                 if exerciseExists(exercise, showOperation):
                     eid = str(sql.execute(
@@ -92,6 +93,7 @@ def train(showOperation, operation):
         else:
             if input("create Training Plan? ") == "y":
                 createTrainingPlan(showOperation, tid)
+            sql.execute(f"Update training SET training_duration = {time.time() - secondsSinceEpoch}", showOperation, "post")
 
 
 def getdevelopment(showOperation, operation):
@@ -142,7 +144,7 @@ def addtrainingplan(showOperation, operation):
         sql.execute(
             f"INSERT INTO training_plan (training_plan_name, training_plan_description) VALUES('{name}', '{description}')",  showOperation, "post")
         tid = get.getIntern("training_plan", [
-                            "training_plan_id"], f"training_plan_name = '{name}' AND training_plan_description = '{description}'", showOperation)[0][0]
+                            "training_plan_id"], f"training_plan_name = '{name}' AND training_plan_description = '{description}'", showOperation, "get")[0][0]
         for row in plan:
             sql.execute(
                 f"INSERT INTO training_plan_parts(training_plan_parts_exercise_id, training_plan_parts_training_plan_id, training_plan_parts_sets, training_plan_parts_rest) VALUES({getExerciseId(row[0], showOperation)}, {tid}, {row[1]}, {row[2]})", showOperation, "post")
