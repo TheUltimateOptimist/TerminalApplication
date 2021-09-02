@@ -1,0 +1,129 @@
+qq-0: Was zeichnet geordnete Daten aus?
+Sie haben eine definierte Reihenfolge
+
+qq-0: Wodurch werden bestimmte Datenstrukturen charakterisiert?
+Durch die Operationen, die man auf ihnen ausführen kann.
+
+qq-1: Ich habe eine feste Größe. Welche Datenstruktur bin ich?
+Array
+
+qq-2: Wie definiert man ein Array in Pseudocode?
+variable = Array(n)
+variable := array(n)
+correct variable := Array[n]
+variable := Array(length: n)
+
+qq-1: Welche Datenstruktur unterscheidet sich leicht von Arrays kann aber beliebig lang werden?
+verkettete Liste
+
+qq-0: Welche Elemente sind der verketteten List bekannt?
+Der verketteten List ist nur das erste Element bekannt
+
+qq-0: Wie können die restlichen Elemente abgefragt werden?
+Jedes Element kennt das nächste Element. Will man nicht das erste Element abfragen, muss man die Liste lang gehen.
+
+qq-1: Wie heißt die Operation, mit der man bei einer verketteten List ein Elment an ein bestimmtes Element anfügen kann, ohne dass die anderen Elemente beeinflusst werden?
+insertAfter
+
+qq-1: Kann man bei der verketteten Liste auf ein bestimmtes Element anhand der Position zugreifen?
+nein
+
+qq-0: Wie funktioniert ein Stack?
+Ein Stack kann man sich wie einen Papierstapel vorstellen, bei dem man immer auf das oberste Papier zugreifen kann, oder ein Papier oben drauf legen kann.
+
+qq-1: Wie heißt der Befehl, mit dem man ein neues Element auf den Stapel(Stack) hinzufügt?
+push
+
+qq-1: Wie heißt die Operation, die das oberste Element eines Stacks enfernt und zurückgibt?
+pop
+
+qq-1: Wie heißt die Operation, die wahr oder falsch zurückgibt, je nachdem ob sich Elemente in einem Stack befinden?
+isEmpty
+
+qq-1: Wie nennt man das Prinzip, nach dem ein Stack arbeitet?
+LIFO
+
+qq-1: Wie nennt man das Prinzip, nach dem eine Queue arbeitet?
+FIFO
+
+qq-1: Wie nennt man die Operation, mit der man ein Element an das Ende einer Queue anfügt?
+enqueue
+
+qq-1: Wie nennt man die Operation, mit der man ein Element von dem Anfang einer Queue entfernt und zurückgibt?
+dequeue
+
+qq-1: Wie lautet die Operation, die wahr oder falsch zurückgibt, je nachdem ob eine Queue Elemente enthält?
+isEmpty
+
+qq-1: Definiere ein Stack unter der Variable stack in Pseudocode:
+stack:=Stack()
+
+qq-1: Definiere eine Queue unter der Variable queue in Pseudocode:
+queue:=Queue()
+
+qq-1: Entferne und gib das oberste Element der Variable stack zurück(Pseudocode):
+stack.pop()
+
+qq-1: Füge das Element e der Variable queue an(in Pseudocode):
+queue.enqueue(e)
+
+qq-0: Wieviel Speicherplatz wird beim Anlegen eines Arrays für dasselbige reserviert?
+Der reservierte Speicherplatz entspricht dem Produkt aus der Anzahl an Elementen und deren Speicherbedarf.
+
+qq-1: Kann die Speichergröße für ein Array zunehmen?
+nein
+
+qq-1: Kann man bei einem Array anhand seiner Speichergröße feststellen, wieviele Elemente es enthält?
+nein
+
+qq-0: Wie funktioniert ein dynamisches Array?
+Ein dynamisches Array wird wie ein normales Array gespeichert. Wird der Speicherplatz überschritten, wird ein neues, größeres Array angelegt, in das alle bereits vorhandenen Werte überschrieben werden. Genauso kann es auch schrumpfen, indem ein neues kleineres Array angelegt wird.
+
+qq-1: Wie lautet der Befehl, mit dem man ein neues Element zu einem dynamischen Array hinzufügt?
+add
+
+qq-1: Wie lautet der Befehl, mit dem man ein Element von einem dynamischen Array entfernt?
+remove
+
+qq-1: Wie lautet der Befehl, der die Anzahl der Elemente in einem dynamischen Array zurückgibt?
+size
+
+qq-1: Wie lautet der Befehl, der ein bestimmtes Element eines dynamischen Arrays zurückgibt?
+get
+
+qq-0: Wie funktioniert die Speicherung einer verketteten Liste?
+Jedes Element speichert den Specherort seines Nachfolgers.
+
+qq-0: Was ist der Unterschid zwischen einer einfach und doppelt verketteten List?
+Eine doppelt verkettete List speichert auch immer seinen Vorgänger.
+
+qq-1: Welche Operation kann man zusätzlich auf einer doppelt verketteten List ausführen?
+insertBefore
+
+qq-0: Wan genügt eine einfach verkettete List?
+Wenn man nur an den Anfang der List Elemente anhängen oder von dort entfernen möchte.
+
+qq-2: Für die Implementierung welcher Datenstrukturen ist die verkettete List die Basis?
+Stack
+correct Stack und Queue
+Array
+Queue
+
+qq-1: Welche Datenstruktur ist charakteristisch für ungeordnete Daten?
+Set
+
+qq-0: Nenne die drei Operationen, die auf einem Set effizient ausgeführt werden können! 
+add, remove, contains
+
+qq-1: Ein Set speicher jedes Element nur einmal, auch wenn es mehrfach hinzugefügt wird. Richtig?
+ja
+
+qq-1: Welche Operation ermittelt die Zahl der Elemente in einem Set?
+size
+
+qq-1: Wie heißt die Datenstruktur, die im Gegensatz zu Sets, für jedes Element noch ein Schlüssel hinterlegt?
+Map
+
+qq-0: Welche vier Operationen können auf einer Map effizient ausgeführt werden?
+put, get, remove, hasKey
+

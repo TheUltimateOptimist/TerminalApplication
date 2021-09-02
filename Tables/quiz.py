@@ -55,6 +55,21 @@ def requestQuizId(showOperation):
         return 0
 
 
+def requestQuiz(quizId, showOperation):
+    """
+    asks user for specific quiz\n
+    returns all questions of that quiz\n
+    in form of a list\n
+    index 0: question text\n
+    index 1: question answer\n
+    index 2: question classification\n
+    index 3: question id
+    """
+    result = get.getIntern("questions", [
+        "question_question", "question_answer", "question_classification", "question_id"], f"question_quiz_id = {quizId} ORDER BY question_id ASC", showOperation)
+    return result
+
+
 def requestQuestions(quizId, showOperation):
     c.printBlue("Enter s to stop")
     frage = ""
@@ -84,7 +99,6 @@ def requestQuestions(quizId, showOperation):
 def requestSpecificQuestionData(quizId, showOperation):
     questions = get.getIntern("questions", ["question_question", "question_answer", "question_classification",
                               "question_id"], f"question_quiz_id = {quizId} ORDER BY question_id", showOperation)
-    print(questions)
     functions.printTable(questions, [
                          "question", "answer", "classification", "id"], "blue", ["cyan"], "blue", showIndexes=False)
     questionNumber = input("Select a number: ")
@@ -101,24 +115,75 @@ def saveQuiz(quizName, showOperation):
                   quizName, 0, 0], showOperation)
 
 
+def deleteTextFileContent(filename):
+    file = open(filename, "w")
+    file.write("")
+    file.close()
+
+
+def writeQuiz(quizId, showOperation):
+    questions = requestQuiz(quizId, showOperation)
+    deleteTextFileContent("quiz.txt")
+    file = open("quiz.txt", "a", encoding="utf-8")
+    for question in questions:
+        file.write(f"qq-{str(question[2])}: {str(question[0])}\n")
+        for answer in question[1].split('--a--'):
+            file.write(str(answer) + "\n")
+        file.write("\n")
+    file.close()
+
+
+def quizDateiAuswerten(quizId, showOperation, questionsExist=False):
+    if questionsExist:
+        maxId = sql.execute(
+            f"SELECT MAX(question_id) FROM questions WHERE question_quiz_id = {quizId}", showOperation, "get")[0][0]
+    print("Saving...")
+    with open("quiz.txt", "r", encoding="utf-8") as file:
+        lines = file.readlines()
+    fragenAntwortListe = []
+    answers = []
+    for line in lines:
+        if line.split("-")[0] == "qq":
+            fragenAntwortListe.append(
+                (line.split(": ", maxsplit=1)[1]).split("\n")[0])
+            fragenAntwortListe.append(line.split("-")[1].split(":")[0])
+        elif line != "\n" and line != "end\n":
+            answers.append(line.split("\n")[0])
+        else:
+            if len(fragenAntwortListe) == 2:
+                fragenAntwortListe.insert(1, "--a--".join(answers))
+                print("list: " + str(fragenAntwortListe))
+                saveQuestion(fragenAntwortListe, quizId, showOperation)
+                fragenAntwortListe = []
+                answers = []
+    if questionsExist:
+        sql.execute(
+            f"Delete from questions WHERE question_id <= {maxId} and question_quiz_id = {quizId}", showOperation, "post")
+    c.printGreen("Saved")
+
+
 def addquiz(showOperation, sqloperation):
     quizName = input("Enter the quiz name: ")
     if quizName != "":
         saveQuiz(quizName, showOperation)
         quizId = int(get.getIntern("quizes", [
                      "quiz_id"], f"quiz_name = '{quizName}'", showOperation)[0][0])
-        requestQuestions(quizId, showOperation)
+        # requestQuestions(quizId, showOperation)
+        import os
+        os.system("notepad quiz.txt")
+        s = input("to save questions enter y: ")
+        if s == "y":
+            quizDateiAuswerten(quizId, showOperation)
         if sqloperation.__contains__("-r"):
             addquiz(showOperation, sqloperation)
 
 
 def practicequiz(showOperation, sqloperation):
     quizId = requestQuizId(showOperation)
-    if quizId != 0:
+    if quizId > 0:
+        fragenAntwortListe = requestQuiz(quizId, showOperation)
         start = format.currentDateTime()
         richtig = 0
-        fragenAntwortListe = get.getIntern("questions", [
-                                           "question_question", "question_answer", "question_classification", "question_id"], f"question_quiz_id = {quizId} ORDER BY question_id ASC", showOperation)
         for row in fragenAntwortListe:
             c.printBlue(row[0])
             if int(row[2]) == 1:
@@ -168,13 +233,21 @@ def practicequiz(showOperation, sqloperation):
             c.printGreen("Congratulations, you got it!!")
         add.addIntern("quizing", ["quizing_datetime", "quizing_quiz_id", "quizing_correct"], [start, quizId,
                                                                                               richtig], showOperation)
+        if sqloperation.__contains__("-r"):
+            practicequiz(showOperation, sqloperation)
 
 
-def addquizquestions(showOperation, sqloperation):
+def editquiz(showOperation, sqloperation):
     quizId = requestQuizId(showOperation)
     if quizId != 0:
-        requestQuestions(quizId, showOperation)
-        updateQuizLength(quizId, showOperation)
+        writeQuiz(quizId, showOperation)
+        import os
+        os.system("notepad quiz.txt")
+        s = input("save Changes? (y = yes, n = no) ")
+        if s == "y":
+            quizDateiAuswerten(quizId, showOperation, True)
+        if sqloperation.__contains__("-r"):
+            editquiz(showOperation, sqloperation)
 
 
 def removequizquestion(showOperation, sqloperation):
@@ -189,7 +262,10 @@ def removequizquestion(showOperation, sqloperation):
 
 def removequiz(showOperation, sqloperation):
     quizId = requestQuizId(showOperation)
-    sql.execute(
-        f"DELETE FROM questions WHERE question_quiz_id = {quizId}", showOperation, "post")
-    sql.execute(
-        f"DELETE FROM quizes WHERE quiz_id = {quizId}", showOperation, "post")
+    if quizId != 0:
+        sql.execute(
+            f"DELETE FROM questions WHERE question_quiz_id = {quizId}", showOperation, "post")
+        sql.execute(
+            f"DELETE FROM quizes WHERE quiz_id = {quizId}", showOperation, "post")
+        if sqloperation.__contains__("-r"):
+            removequiz(showOperation, sqloperation)
