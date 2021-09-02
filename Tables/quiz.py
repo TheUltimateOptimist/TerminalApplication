@@ -142,6 +142,7 @@ def quizDateiAuswerten(quizId, showOperation, questionsExist=False):
         lines = file.readlines()
     fragenAntwortListe = []
     answers = []
+    numberOfQuestions = 0
     for line in lines:
         if line.split("-")[0] == "qq":
             fragenAntwortListe.append(
@@ -152,13 +153,15 @@ def quizDateiAuswerten(quizId, showOperation, questionsExist=False):
         else:
             if len(fragenAntwortListe) == 2:
                 fragenAntwortListe.insert(1, "--a--".join(answers))
-                print("list: " + str(fragenAntwortListe))
                 saveQuestion(fragenAntwortListe, quizId, showOperation)
+                numberOfQuestions += 1
                 fragenAntwortListe = []
                 answers = []
     if questionsExist:
         sql.execute(
             f"Delete from questions WHERE question_id <= {maxId} and question_quiz_id = {quizId}", showOperation, "post")
+    sql.execute(
+        f"UPDATE quizes SET quiz_numberofquestions = {numberOfQuestions} WHERE quiz_id = {quizId}")
     c.printGreen("Saved")
 
 
@@ -169,6 +172,7 @@ def addquiz(showOperation, sqloperation):
         quizId = int(get.getIntern("quizes", [
                      "quiz_id"], f"quiz_name = '{quizName}'", showOperation)[0][0])
         # requestQuestions(quizId, showOperation)
+        deleteTextFileContent("quiz.txt")
         import os
         os.system("notepad quiz.txt")
         s = input("to save questions enter y: ")

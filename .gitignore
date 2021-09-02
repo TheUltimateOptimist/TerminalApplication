@@ -1,2 +1,5 @@
 # ignores the following windows executable needed for counting the lines of code
 /cloc.exe
+
+# ignores the following files, because they are only created and needed during execution
+/quiz.txt
