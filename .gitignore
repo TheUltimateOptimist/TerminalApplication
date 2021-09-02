@@ -3,3 +3,5 @@
 
 # ignores the following files, because they are only created and needed during execution
 /quiz.txt
+/write_function.py
+/test_function.py
