@@ -143,12 +143,15 @@ def quizDateiAuswerten(quizId, showOperation, questionsExist=False):
     fragenAntwortListe = []
     answers = []
     numberOfQuestions = 0
+    print(lines)
     for line in lines:
+        print(line)
+        print("list: " + str(fragenAntwortListe))
         if line.split("-")[0] == "qq":
             fragenAntwortListe.append(
                 (line.split(": ", maxsplit=1)[1]).split("\n")[0])
             fragenAntwortListe.append(line.split("-")[1].split(":")[0])
-        elif line != "\n" and line != "end\n":
+        elif line != "\n" and line != "end\n" and line != "end":
             answers.append(line.split("\n")[0])
         else:
             if len(fragenAntwortListe) == 2:
@@ -161,7 +164,7 @@ def quizDateiAuswerten(quizId, showOperation, questionsExist=False):
         sql.execute(
             f"Delete from questions WHERE question_id <= {maxId} and question_quiz_id = {quizId}", showOperation, "post")
     sql.execute(
-        f"UPDATE quizes SET quiz_numberofquestions = {numberOfQuestions} WHERE quiz_id = {quizId}")
+        f"UPDATE quizes SET quiz_numberofquestions = {numberOfQuestions} WHERE quiz_id = {quizId}", showOperation, "post")
     c.printGreen("Saved")
 
 
@@ -224,8 +227,10 @@ def practicequiz(showOperation, sqloperation):
                 else:
                     c.printRed(f"Wrong: {correctNumber} is correct")
             elif int(row[2]) == 3:
-                c.printGreen(
-                    "Go to C:Users/JDuec/ta/write_function.py and implement the function 'function'")
+                with open("write_function.py", "w", encoding="utf8") as file:
+                    file.write(f"# {row[0]}\ndef function():")
+                import os
+                os.system("notepad write_function.py")
                 s = input("If done enter anything to continue! ")
                 if testFunction(row[1]):
                     richtig = richtig + 1
