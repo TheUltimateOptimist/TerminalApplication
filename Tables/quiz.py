@@ -22,7 +22,7 @@ def testFunction(testString):
     for specificTest in testList:
         testData = specificTest.split(": ")
         file.write(
-            f"   if {testData[0]} == {testData[1]}:\n      passedTests = passedTests + 1\n")
+            f"   if {testData[0]} == {testData[1]}:\n      passedTests+=1\n")
     file.write(
         "   if passedTests >= tests:\n      printGreen('all tests passed')\n      return True\n   else:\n      printRed(f'{passedTests} of {tests} tests passed')\n      return False")
     file.close()
