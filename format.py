@@ -63,6 +63,7 @@ def currentDate():
     t = time.localtime(time.time())
     return f"{t.tm_year}-{t.tm_mon}-{t.tm_mday}"
 
+
 def currentDateTime():
     t = time.localtime(time.time())
     return f"{t.tm_year}-{t.tm_mon}-{t.tm_mday} {t.tm_hour}:{t.tm_min}:{t.tm_sec}"
@@ -70,7 +71,9 @@ def currentDateTime():
 
 def currentTime():
     t = time.localtime(time.time())
-    return f"{t.tm_hour}:{t.tm_min}:{t.tm_sec}"   
+    return f"{t.tm_hour}:{t.tm_min}:{t.tm_sec}"
 
-     
 
+def toDateTime(seconds):
+    t = time.localtime(seconds)
+    return f"{t.tm_year}-{t.tm_mon}-{t.tm_mday} {t.tm_hour}:{t.tm_min}:{t.tm_sec}"

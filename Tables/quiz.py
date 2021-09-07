@@ -40,10 +40,12 @@ def updateQuizLength(quizId, showOperation):
 def requestQuizId(showOperation):
     # get all quizes
     quizes = get.getIntern("quizes", [
-                           "quiz_name", "quiz_learned", "quiz_numberofquestions"], "", showOperation)
-
+                           "quiz_name", "quiz_learned", "quiz_numberofquestions", "quiz_duration"], "", showOperation)
+    for i, row in enumerate(quizes):
+        if row[3] != "None":
+            quizes[i][3] = format.secondsToHourMinuteFormat(int(row[3]))
     # print all quizes numbered
-    functions.printTable(quizes, ["quiz_name", "quiz_learned", "quiz_numberofquestions"], "blue", [
+    functions.printTable(quizes, ["quiz_name", "quiz_learned", "quiz_numberofquestions", "quiz_duration"], "blue", [
                          "cyan"], "blue", showIndexes=True)
     # ask for desired quizNumber
     quizNumber = input("Enter the quiz number: ")
@@ -189,7 +191,8 @@ def practicequiz(showOperation, sqloperation):
     quizId = requestQuizId(showOperation)
     if quizId > 0:
         fragenAntwortListe = requestQuiz(quizId, showOperation)
-        start = format.currentDateTime()
+        import time
+        start = time.time()
         richtig = 0
         for row in fragenAntwortListe:
             c.printBlue(row[0])
@@ -240,8 +243,10 @@ def practicequiz(showOperation, sqloperation):
             update.updateIntern("quizes", ["quiz_learned"], [
                                 1], f"quiz_id = {quizId}", showOperation)
             c.printGreen("Congratulations, you got it!!")
-        add.addIntern("quizing", ["quizing_datetime", "quizing_quiz_id", "quizing_correct"], [start, quizId,
-                                                                                              richtig], showOperation)
+        add.addIntern("quizing", ["quizing_datetime", "quizing_quiz_id", "quizing_correct", "quizing_duration"], [format.toDateTime(start), quizId,
+                                                                                                                  richtig, round(time.time() - start)], showOperation)
+        update.updateIntern("quizes", ["quiz_duration"], [
+                            round(time.time() - start)], f"quiz_id = {quizId}", showOperation)
         if sqloperation.__contains__("-r"):
             practicequiz(showOperation, sqloperation)
 
