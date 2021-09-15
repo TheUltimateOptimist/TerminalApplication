@@ -39,11 +39,8 @@ def interact():
 
 
 # main function:
-def main():
+if __name__ == '__main__':
     initializeServer()
     color.printMagenta("Welcome to Jonathan's personal database")
     color.printMagenta("Enter lhelp to view all possible operations")
     interact()
-
-
-main()
