@@ -14,14 +14,16 @@ def initializeServer():
     print("starting server...")
     try:
         result = execute("", False, "start")
+        color.printGreen("server successfully started")
     except:
         color.printRed("Your internet connection is too bad!")
         import time
         time.sleep(3)
-    color.printGreen("server successfully started")
-
+    initializeServer()
 
 # interact with user
+
+
 def interact():
     showOperation = False
     operation = input("What's up my friend?> ")
