@@ -7,11 +7,17 @@ from sql import execute
 import color
 import terminalLanguage
 
-
 # starting the server
+
+
 def initializeServer():
     print("starting server...")
-    result = execute("", False, "start")
+    try:
+        result = execute("", False, "start")
+    except:
+        color.printRed("Your internet connection is too bad!")
+        import time
+        time.sleep(3)
     color.printGreen("server successfully started")
 
 
